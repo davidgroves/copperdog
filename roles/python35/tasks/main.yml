@@ -1,0 +1,18 @@
+---
+- name: Adding PPA for LXD repo
+  shell: "sudo add-apt-repository -y ppa:fkrull/deadsnakes"
+  become: true
+- name: Apt update
+  apt: update_cache=yes
+  become: true
+- name: Installing Python35
+  apt: name={{ item }} state=present install_recommends=yes
+  with_items:
+    - python3.5
+    - python3.5-dev
+    - python3-pip
+    - python-virtualenv
+  become: true
+- name: Symlink Python3 to Python3.4
+  file: state=link src=/usr/bin/python3.4 dest=/usr/bin/python3
+  become: true

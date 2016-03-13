@@ -1,0 +1,52 @@
+---
+- name: Add a user for jupyter
+  user: name='jupyter' comment='Jupyter' password='*' uid=5000 state=present shell='/bin/bash' home='/opt/jupyter'
+  become: true
+- name: Attach the jupyter_data volume
+  local_action: os_server_volume state=present cloud=ovh server=bach volume="9c87b1e1-5385-4e6f-bd5c-021f78cd1cf8" device=/dev/vdb
+- name: Create mount point for jupyter_data
+  file: path=/data/jupyter state=directory mode=0755 owner=jupyter group=jupyter
+  become: true
+- name: Mount the jupyter data
+  mount: name=/data/jupyter src=/dev/vdb fstype=ext4 opts=rw state=mounted
+  become: true
+- name: Creating the /opt/jupyter directory
+  file: path=/opt/jupyter state=directory mode=0755 owner=jupyter group=jupyter
+  become: true
+- name: Copying files for jupyter
+  copy: src=jupyter dest=/etc/init.d/jupyter mode=0755 owner=root group=root
+  become: true
+- name: Copying files for jupyter
+  copy: src=jupyter_notebook_config.py dest=/opt/jupyter/jupyter_notebook_config.py mode=0755 owner=jupyter group=jupyter
+  become: true
+- name: Copying files for jupyter
+  copy: src=start-jupyter.sh dest=/opt/jupyter/start-jupyter.sh mode=0755 owner=jupyter group=jupyter
+  become: true
+- name: Install jupyter in the /opt/jupyter as a virtualenv
+  pip: name={{ item }}
+       chdir=/opt/jupyter
+       virtualenv=/opt/jupyter/venv
+       virtualenv_python=python3
+       state=present
+       executable=pip3
+  with_items:
+    - jupyter
+    - matplotlib
+    - numpy
+    - scipy
+    - matplotlib
+    - pandas
+    - requests
+    - sympy
+  become: true
+- name: Install jupyter in the /opt/jupyter as a virtualenv
+  pip: name="jupyter"
+       chdir=/opt/jupyter
+       virtualenv=/opt/jupyter/venv
+       virtualenv_python=python3
+       state=present
+       executable=pip3
+  become: true
+- name: Start jupyter service
+  service: name=jupyter enabled=yes state=started pattern=jupyter
+  become: true

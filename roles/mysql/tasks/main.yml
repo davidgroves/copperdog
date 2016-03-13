@@ -1,0 +1,53 @@
+---
+- name:  We need Maria10.1 which isn't in the base Ubuntu 14.04 LTS so add the key
+  command: apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xcbcb082a1bb943db
+  become: true
+- name: We need to add the repo
+  apt_repository: repo='deb http://lon1.mirrors.digitalocean.com/mariadb/repo/10.1/ubuntu trusty main' state=present
+  become: true
+- name: Update apt cache
+  apt: update_cache=yes
+  become: true
+- name: Installing MariaDB 10
+  apt: name={{ item }} install_recommends=yes state=present
+  become: true
+  items:
+    - mariadb-server
+    - mariadb-client
+- name: Attach the mysql_data volume
+  local_action: os_server_volume state=present cloud=ovh server=bach volume="2ab6e003-fc32-4829-bdd7-2fec2fc35bb6" device=/dev/vdd
+- name: Create mount point for mysql_data
+  file: path=/data/mysql state=directory mode=0755 owner=root group=root
+  become: true
+- name: Mount the mysql data
+  mount: name=/data/mysql src=/dev/vdd fstype=ext4 opts=rw state=mounted
+  become: true
+- name: Fix permissions if UID of mysql has changed
+  file: owner="mysql" group="mysql" path="/data/mysql/" state=directory recurse=yes
+  become: true
+- name: Copy config with datadir
+  copy: src=dirs.cnf dest=/etc/mysql/conf.d/dirs.cnf owner=root group=root mode=0755
+  become: true
+- name: Setup mariadb
+  debconf:
+    name: mariadb-server
+    question: mysql-server/root_password
+    value: "{{ secrets_mysql_password }}"
+    vtype: password
+  become: true
+- name: Setup mariadb
+  debconf:
+    name: mariadb-server
+    question: mysql-server/root_password_again
+    value: "{{ secrets_mysql_password }}"
+    vtype: password
+  become: true
+- name: Install mariadb
+  apt: name={{ item }} state=present
+  become: true
+  with_items:
+    - mariadb-server
+    - mariadb-client
+- name: Restart mysql
+  service: name=mysql state=restarted
+  become: true

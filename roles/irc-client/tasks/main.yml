@@ -1,0 +1,12 @@
+---
+- name: Installing packages for irssi.
+  apt: pkg={{ item }} state=installed
+  become: true
+  with_items:
+    - "irssi"
+    - "irssi-scripts"
+    - "screen"
+    - "tmux"
+- name: Removing screen splash page
+  lineinfile: "line='startup_message off' dest='/etc/screenrc'"
+  become: true

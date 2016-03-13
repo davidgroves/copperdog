@@ -1,0 +1,34 @@
+$TTL    300
+@       IN      SOA     dnsadmin.as5607.net. dnsadmin.as5607.net. (
+                              1         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                          86400 )       ; Negative Cache TTL
+;
+
+@       IN      NS      ns0.as5607.net.
+@       IN      NS      ns1.as5607.net.
+
+; For DNSSEC
+$INCLUDE /etc/bind/keys/as5607.net.ksk   ; KSK
+$INCLUDE /etc/bind/keys/as5607.net.zsk   ; ZSK
+
+{# This is a really ugly hack, we shouldnt hardcode hostnames here but I need something that works now #}
+
+{% for host in groups['all'] %}
+{{ hostvars[host]['ansible_nodename'] }}  IN  A       {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}
+{% if hostvars[host]['ansible_nodename'] == "bach" %}
+ns0 IN  A       {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}
+{% endif %}
+{% if hostvars[host]['ansible_nodename'] == "chopin" %}
+ns1 IN  A       {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}
+{% endif %}
+{% endfor %}
+
+@                       IN  A       2.223.255.254
+@                       IN  AAAA    2a02:c7a:fc02:200:214:4fff:fed2:4125
+banshee.as5607.net.     IN  A       2.223.255.254
+banshee.as5607.net.     IN  AAAA    2a02:c7a:fc02:200:214:4fff:fed2:4125
+banshee2.as5607.net.    IN  A       2.223.255.254
+banshee2.as5607.net.    IN  AAAA    2a02:c7a:fc02:200:214:4fff:fed2:4126

@@ -1,0 +1,33 @@
+---
+- name: Install the keys for Jenkins
+  apt_key: url='http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key' state=present
+  become: true
+- name: Add the repo for Jenkins
+  apt_repository: state=present repo='deb http://pkg.jenkins-ci.org/debian binary/'
+  become: true
+- name: Update apt cache
+  apt: update_cache=yes
+  become: true
+- name: Install Jenkins
+  apt: name=jenkins state=present
+  become: true
+- name: Attach the jenkins volume
+  local_action: os_server_volume state=present cloud=ovh server=bach volume="25f4f900-f13b-4f97-b403-3faba808af10" device=/dev/vdf
+- name: Create mount point for jenkins
+  file: path=/data/jenkins state=directory mode=0755 owner=jenkins group=jenkins
+  become: true
+- name: Mount the jenkins data
+  mount: name=/data/jenkins src=/dev/vdf fstype=ext4 opts=rw state=mounted
+  become: true
+- name: Configure Jenkins to use the correct data directory
+  lineinfile: dest=/etc/default/jenkins regexp="JENKINS_HOME=.*" line="JENKINS_HOME=/data/jenkins"
+  become: true
+- name: Configure Jenkins prefix so it works behind NGINX
+  lineinfile: dest=/etc/default/jenkins regexp="JENKINS_ARGS.*" line='JENKINS_ARGS="--webroot=/var/cache/$NAME/war --httpPort=$HTTP_PORT --ajp13Port=$AJP_PORT --prefix=/jenkins"'
+  become: true
+- name: Add jenkins to the shadow group so we can use logins
+  user: name="jenkins" groups="shadow"
+  become: true
+- name: Restart Jenkins
+  service: name=jenkins state=restarted
+  become: true

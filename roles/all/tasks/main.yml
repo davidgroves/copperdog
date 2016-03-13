@@ -1,0 +1,33 @@
+---
+- name: Update the apt repo if it hasn't been done in the last 12 hours
+  apt: update_cache=yes cache_valid_time=43200
+  become: true
+- name: Update all the packages that need it
+  apt: upgrade=dist
+  become: true
+- name: Install required packages
+  apt: name={{ item }} state=present
+  become: true
+  with_items:
+    - python-pip
+    - git
+    - bc
+    - haveged
+    - python-dev
+    - slay
+    - libatlas-base-dev
+    - libpng-dev
+    - libagg-dev
+    - libfreetype6
+    - libfreetype6-dev
+    - libxft-dev
+    - gfortran
+    - links
+    - unzip
+    - zip
+- name: Install Shade so some Openstack stuff works.
+  pip: name="shade" state=present executable=pip
+  become: true
+- name: Configure our hostname
+  hostname: name={{ ansible_hostname }}
+  become: true

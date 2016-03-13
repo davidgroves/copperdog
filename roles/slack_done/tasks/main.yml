@@ -1,0 +1,7 @@
+---
+- name: Notify that we are done
+  slack:
+    msg: "{{ ansible_hostname }} build has finished !"
+    color: good
+    channel: "{{ secrets_slack_buildbot_channel }}"
+    token: "{{ secrets_slack_buildbot_token }}"

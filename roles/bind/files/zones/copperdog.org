@@ -1,0 +1,29 @@
+$TTL    300
+@       IN      SOA     dnsadmin.copperdog.org. dnsadmin.copperdog.org. (
+                              1         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                          86400 )       ; Negative Cache TTL
+;
+
+@       IN      NS      ns0.copperdog.org.
+@       IN      NS      ns1.copperdog.org.
+
+; For DNSSEC
+$INCLUDE /etc/bind/keys/copperdog.org.ksk   ; KSK
+$INCLUDE /etc/bind/keys/copperdog.org.zsk   ; ZSK
+
+{# This is a really ugly hack, we shouldnt hardcode hostnames here but I need something that works now #}
+
+{% for host in groups['all'] %}
+{{ hostvars[host]['ansible_nodename'] }}  IN  A       {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}
+{% if hostvars[host]['ansible_nodename'] == "bach" %}
+ns0 IN  A       {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}
+@   IN  A       {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}
+{% endif %}
+{% if hostvars[host]['ansible_nodename'] == "chopin" %}
+ns1 IN  A       {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}
+@ IN A          {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}
+{% endif %}
+{% endfor %}

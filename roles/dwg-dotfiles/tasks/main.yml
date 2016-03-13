@@ -1,0 +1,8 @@
+---
+- name: Download dwg dotfile repo to homedir.
+  git: dest="/home/dwg/dotfiles" clone="yes" depth=1 repo="https://github.com/davidgroves/dotfiles"
+  become: true
+- name: Run the dotfile install script
+  command: /home/dwg/dotfiles/install-dotfiles.sh
+  become: true
+  become_user: dwg

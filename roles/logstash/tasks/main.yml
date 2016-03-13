@@ -1,0 +1,28 @@
+---
+- name: Adding signing key for elasticsearch repo
+  shell: "wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -"
+  become: true
+- name: Adding logstash repo
+  apt_repository: repo='deb http://packages.elastic.co/logstash/2.2/debian stable main' state=present
+  become: true
+- name: Apt update
+  apt: update_cache=yes
+  become: true
+- name: Copying config files
+  copy: src=files/ dest=/etc/logstash/conf.d/ owner=root group=root mode=0644
+  become: true
+- name: Installing logstash
+  apt: name=logstash state=present install_recommends=yes
+  become: true
+- name: Create logstash pattern directory
+  file: path=/opt/logstash/patterns state=directory owner=root group=root mode=0755
+  become: true
+- name: Copy patterns to patterns directory
+  copy: src=files/patterns/ dest=/opt/logstash/patterns/ owner=root group=root mode=0755
+  become: true
+- name: Copy logstash init script to directory
+  copy: src=files/init.d/logstash dest=/etc/init.d/logstash owner=root group=root mode=0755
+  become: true
+- name: Start logstash
+  service: name=logstash state=restarted enabled=yes
+  become: true

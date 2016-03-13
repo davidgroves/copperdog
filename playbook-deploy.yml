@@ -1,0 +1,35 @@
+---
+- name: Bach
+  hosts: localhost
+  tasks:
+  - name: Launch Bach
+    os_server:
+      state: present
+      cloud: ovh
+      region_name: GRA1
+      name: bach
+      image: "Ubuntu 14.04"
+      key_name: DavidGroves
+      timeout: 200
+      flavor: vps-ssd-3
+      security_groups: default
+      auto_ip: yes
+      meta:
+        group: "all,bind,blog,gandi-dns,nginx,ssh,users"
+- name: Chopin
+  hosts: localhost
+  tasks:
+  - name: Launch Chopin
+    os_server:
+      state: present
+      cloud: ovh
+      region_name: SBG1
+      name: chopin
+      image: "Ubuntu 14.04"
+      key_name: DavidGroves
+      timeout: 200
+      flavor: vps-ssd-3
+      security_groups: default
+      auto_ip: yes
+      meta:
+        group: "all,bind,blog,gandi-dns,nginx,ssh,users"

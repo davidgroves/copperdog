@@ -1,0 +1,24 @@
+---
+- name: Creating /opt/
+  file: path=/opt state=directory mode=0755 owner=root group=root
+  become: true
+- name: Creating /opt/gandi-dns/
+  file: path=/opt/gandi-dns state=directory mode=0755 owner=root group=root
+  become: true
+- name: Copying files for gandi-dns
+  template: src={{ item }} dest=/opt/gandi-dns owner=root group=root
+  become: true
+  with_items:
+    - roles/gandi-dns/files/copperdog.org.ini
+    - roles/gandi-dns/files/as5607.net.ini
+    - roles/gandi-dns/files/requirements.txt
+    - roles/gandi-dns/files/gandi-dns.py
+- name: Install pip requirements
+  pip: requirements=/opt/gandi-dns/requirements.txt executable=pip3
+  become: true
+- name: Set file permissions on /opt/gandi-dns/gandi-dns.py
+  file: path=/opt/gandi-dns/gandi-dns.py mode=0755
+  become: true
+- name: Run DNS registratrion
+  command: chdir=/opt/gandi-dns/ /opt/gandi-dns/gandi-dns.py /opt/gandi-dns/copperdog.org.ini /opt/gandi-dns/as5607.net.ini
+  become: true

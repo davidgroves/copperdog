@@ -1,0 +1,13 @@
+---
+- name: Install cups
+  apt: name=cups state=present install_recommends=yes
+  become: true
+- name: Allow anyone to use cupsd
+  copy: src=files/cupsd.conf dest=/etc/cups/cupsd.conf
+  become: true
+- name: Restarting cups
+  service: name=cups state=restarted
+  become: true
+- name: Install samba
+  apt: name=samba state=present install_recommends=yes
+  become: true

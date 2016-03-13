@@ -1,0 +1,16 @@
+---
+- name: Add Sun Java repo
+  shell: "echo '\n' | add-apt-repository -y ppa:webupd8team/java"
+  become: true
+- name: Apt update
+  apt: update_cache=yes
+  become: true
+- name: Accept license of Sun Java
+  shell: "echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections"
+  become: true
+- name: Accept license of Sun Java
+  shell: "echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections"
+  become: true
+- name: Install java8
+  apt: name=oracle-java8-installer state=present install_recommends=yes
+  become: true

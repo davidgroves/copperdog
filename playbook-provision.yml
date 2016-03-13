@@ -1,0 +1,34 @@
+---
+- hosts: all
+  remote_user: admin
+  roles:
+    - role: all
+    - role: users
+    - role: golang
+    - role: python35
+    - role: nodejs
+    - role: bind
+    - role: gandi-dns
+    - role: dwg-dotfiles
+
+- hosts: bach
+  remote_user: admin
+  roles:
+    - role: docker
+    - role: nginx
+    - role: blog
+    - role: irc-client
+    - role: ssh
+    - role: java
+    - role: jupyter
+    - role: photos
+    - role: mysql
+    - role: jenkins
+    - role: elasticsearch
+    - role: logstash
+    - role: kibana
+    - role: beats
+
+- hosts: all
+  roles:
+    - role: slack_done

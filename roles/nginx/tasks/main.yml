@@ -1,0 +1,92 @@
+---
+- name: Add the nginx repo
+  command: "sudo add-apt-repository -y ppa:nginx/stable"
+  become: true
+- name: Apt update
+  apt: update_cache=yes
+  become: true
+- name: Allow nginx to read passwords
+  user: name=www-data groups="shadow" append=yes
+  become: true
+- name: Setup PAM
+  copy: dest=/etc/pam.d/nginx content="@include common-auth" mode=0644 owner=root group=root
+  become: true
+- name: Install required packages
+  apt: name={{ item }} state=present
+  become: true
+  with_items:
+    - nginx-full
+    - php5-common
+    - php5-cli
+    - php5-fpm
+- name: Create the SSL certificate for copperdog.org
+  copy: dest=/etc/ssl/copperdog.org.crt content={{ secrets_ssl_copperdog_crt }} mode=0644 owner=root group=root
+  become: true
+- name: Create the SSL key for copperdog.org
+  copy: dest=/etc/ssl/copperdog.org.key content={{ secrets_ssl_copperdog_key }} mode=0644 owner=root group=root
+  become: true
+- name: Create the SSL certificate for bach.copperdog.org
+  copy: dest=/etc/ssl/bach.copperdog.org.crt content={{ secrets_ssl_bach_crt }} mode=0644 owner=root group=root
+  become: true
+- name: Create the SSL key for bach.copperdog.org
+  copy: dest=/etc/ssl/bach.copperdog.org.key content={{ secrets_ssl_bach_key }} mode=0644 owner=root group=root
+  become: true
+- name: Create the SSL certificate for copperdog.org
+  copy: dest=/etc/ssl/chopin.copperdog.org.crt content={{ secrets_ssl_chopin_crt }} mode=0644 owner=root group=root
+  become: true
+- name: Create the SSL key for copperdog.org
+  copy: dest=/etc/ssl/chopin.copperdog.org.key content={{ secrets_ssl_chopin_key }} mode=0644 owner=root group=root
+  become: true
+- name: Creating the /data/ directory
+  file: path=/data/ state=directory mode=0755 owner=root group=root
+  become: true
+- name: Creating the /data/websites directory for the blog
+  file: path=/data/websites state=directory mode=0755 owner=dwg group=dwg
+  become: true
+- name: Creating the /data/websites/copperdog.org directory for the website
+  file: path=/data/websites/copperdog.org state=directory mode=0755 owner=dwg group=dwg
+  become: true
+- name: Creating the /data/websites/files directory for perm files.
+  file: path=/data/websites/files state=directory mode=0755 owner=dwg group=dwg
+  become: true
+- name: Attach the files/ volume for bach
+  local_action: os_server_volume state=present cloud=ovh server=bach volume="8aface05-ffa4-46d6-9e94-b35df58d0005" device=/dev/vde
+- name: Attach the files/ volume for chopin
+  local_action: os_server_volume region_name="SBG1" state=present cloud=ovh server=chopin volume=files_data device=/dev/vdb
+- name: Mount the files data
+  when: inventory_hostname == 'bach'
+  mount: name=/data/websites/files src=/dev/vde fstype=ext4 opts=rw state=mounted
+  become: true
+- name: Mount the files data
+  when: inventory_hostname == 'chopin'
+  mount: name=/data/websites/files src=/dev/vdb fstype=ext4 opts=rw state=mounted
+  become: true
+- name: Creating the /data/websites/copperdog.org/blog directory for the website
+  file: path=/data/websites/copperdog.org/blog state=directory mode=0755 owner=dwg group=dwg
+  become: true
+- name: Creating the /data/websites/copperdog.org/error directory for the website
+  file: path=/data/websites/copperdog.org/error state=directory mode=0755 owner=dwg group=dwg
+  become: true
+- name: Creating the /data/websites/copperdog.org/css directory for the website
+  file: path=/data/websites/copperdog.org/css state=directory mode=0755 owner=dwg group=dwg
+  become: true
+- name: Copy the 404 error page into place.
+  copy: src=404.html dest=/data/websites/copperdog.org/error/404.html mode=0755 owner=dwg group=dwg
+  become: true
+- name: Copy the css error page into place.
+  copy: src=error.css dest=/data/websites/copperdog.org/css/error.css mode=0755 owner=dwg group=dwg
+  become: true
+- name: Copy the default config into place
+  copy: src=default dest=/etc/nginx/sites-available/default owner=dwg group=dwg mode=0644
+  become: true
+- name: Copy the hostname specific config into place
+  template: src=roles/nginx/files/hostname dest=/etc/nginx/sites-available/hostname owner=dwg group=dwg mode=0644
+  become: true
+- name: Create symlink to for hostname
+  file: src=/etc/nginx/sites-available/hostname dest=/etc/nginx/sites-enabled/hostname state=link
+  become: true
+- name: Restart nginx
+  service: name=nginx state=restarted
+  become: true
+
+

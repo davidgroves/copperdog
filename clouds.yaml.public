@@ -1,0 +1,16 @@
+This file looks like below, but contains secrets that cannot
+be hidden at present by ansible-vault, so this file is published
+here with redactions.
+
+---
+clouds:
+  ovh:
+    auth:
+      auth_url: "https://auth.cloud.ovh.net/v2.0/"
+      username: "REDACTED"
+      password: "REDACTED"
+      project_name: "REDACTED"
+    regions:
+      - "GRA1"
+      - "SBG1"
+      - "BHS1"
