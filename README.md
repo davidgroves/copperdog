@@ -32,7 +32,6 @@ ideally installed in a virtual environment).
  - /dev/vdc: /data/photos
  - /dev/vdd: /data/mysql
  - /dev/vde: /data/websites/files
- - /dev/vdf: 
  
 ## Mount Points (Chopin - Would be the same but for Ansible bugs)
  - /dev/vdb: /data/websites/files
