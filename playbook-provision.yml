@@ -1,6 +1,6 @@
 ---
 - hosts: all
-  remote_user: admin
+  remote_user: ubuntu
   roles:
     - role: all
     - role: users
@@ -10,18 +10,17 @@
     - role: bind
     - role: gandi-dns
     - role: dwg-dotfiles
+    - role: nginx
+    - role: docker
+    - role: ssh
 
 - hosts: bach
-  remote_user: admin
+  remote_user: ubuntu
   roles:
-    - role: docker
-    - role: nginx
     - role: blog
     - role: irc-client
-    - role: ssh
     - role: java
     - role: jupyter
-    - role: photos
     - role: mysql
     - role: jenkins
     - role: elasticsearch
