@@ -9,6 +9,7 @@
   apt: name={{ item }} state=present
   become: true
   with_items:
+    - language-pack-en
     - python-pip
     - git
     - bc
@@ -25,9 +26,9 @@
     - links
     - unzip
     - zip
-- name: Install Shade so some Openstack stuff works.
-  pip: name="shade" state=present executable=pip
-  become: true
+#- name: Install Shade so some Openstack stuff works.
+#  pip: name="shade" state=present executable=pip
+#  become: true
 - name: Configure our hostname
   hostname: name={{ ansible_hostname }}
   become: true

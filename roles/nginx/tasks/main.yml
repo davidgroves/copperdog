@@ -85,6 +85,9 @@
 - name: Create symlink to for hostname
   file: src=/etc/nginx/sites-available/hostname dest=/etc/nginx/sites-enabled/hostname state=link
   become: true
+- name: Copy the website into place.
+  copy: src=../../PROJECTS/www/ dest=/data/websites/copperdog.org/ owner=dwg group=dwg
+  become: true
 - name: Restart nginx
   service: name=nginx state=restarted
   become: true

@@ -9,13 +9,13 @@
   group: name='leni' gid=1002 state=present
   become: true
 - name: Add user for David Groves
-  user: name='dwg' comment='David Groves' password={{ secrets_users_dwg_password }} uid=1001 group='dwg' groups='sudo,lpadmin' state=present shell='/bin/bash'
+  user: name='dwg' comment='David Groves' password={{ secrets_users_dwg_password }} uid=1001 group='dwg' groups='sudo' state=present shell='/bin/bash'
   become: true
 - name: Add SSH key for David Groves
   authorized_key: user='dwg' key={{ secrets_users_dwg_sshkey }} state=present
   become: true
 - name: Add user for Eleni Groves
-  user: name='leni' comment='Eleni Groves' password={{ secrets_users_leni_password }} uid=1002 group='leni' groups='sudo,lpadmin' state=present shell='/bin/bash'
+  user: name='leni' comment='Eleni Groves' password={{ secrets_users_leni_password }} uid=1002 group='leni' groups='sudo' state=present shell='/bin/bash'
   become: true
 - name: Add Google authenticator file for David Groves
   copy: content={{ secrets_users_dwg_googleauth }} dest=/home/dwg/.google_authenticator mode=0600 owner=dwg group=dwg

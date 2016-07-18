@@ -21,8 +21,8 @@
     - role: irc-client
     - role: java
     - role: jupyter
-    - role: mysql
-    - role: jenkins
+    #- role: mysql
+    #- role: jenkins
     - role: elasticsearch
     - role: logstash
     - role: kibana

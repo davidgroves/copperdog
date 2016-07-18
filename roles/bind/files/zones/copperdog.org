@@ -27,3 +27,6 @@ ns1 IN  A       {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}
 @ IN A          {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}
 {% endif %}
 {% endfor %}
+
+blog IN  CNAME  ghs.google.com.
+h5otc3stld46 IN CNAME gv-l3u4fabowxv5fo.dv.googlehosted.com.

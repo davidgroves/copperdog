@@ -11,7 +11,3 @@
 - name: Creating the /data/websites/blog/ directory for the blog
   file: path=/data/websites/blog state=directory mode=0755 owner=dwg group=dwg
   become: true
-- name: Deploy the website
-  connection: local
-  shell: 'PROJECTS/www/publish.sh {{ ansible_eth0["ipv4"]["address"] }}'
-  become: false
